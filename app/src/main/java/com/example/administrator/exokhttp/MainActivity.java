@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
                     new GetWeather().run();}
                     catch (Exception e){
-
+                        Log.i("aaaa","Exception"+e.getCause()+e.getMessage());
                     }
                 }
             }.start();
@@ -44,16 +44,15 @@ public class MainActivity extends AppCompatActivity {
          RequestBody formBody = new FormBody.Builder()
                  .add("cityname", "重庆")
                  .add("key", "1adae4c7546c89639f2f5cc9c3a3d118")
-                 .add("dtype","json")
                  .build();
          Request request = new Request.Builder()
-                 .url(url)
+                 .url("http://op.juhe.cn/onebox/weather/query")
                  .post(formBody)
                  .build();
          Response response = client.newCall(request).execute();
          if (!response.isSuccessful()){
              Log.i("aaaa",response.toString());
-             throw new IOException("Unexpected code " + response);}
+             throw new IOException("Unexpected code " + response.code());}
          Log.i("aaaa",response.body().string());
          System.out.println(response.body().string());
      }
