@@ -6,7 +6,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
+import java.util.Map;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -40,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
  public  class GetWeather{
      OkHttpClient client=new OkHttpClient();
      private void run() throws  Exception{
-         Log.i("aaaa","run");
          RequestBody formBody = new FormBody.Builder()
                  .add("cityname", "重庆")
                  .add("key", "1adae4c7546c89639f2f5cc9c3a3d118")
@@ -51,9 +54,13 @@ public class MainActivity extends AppCompatActivity {
                  .build();
          Response response = client.newCall(request).execute();
          if (!response.isSuccessful()){
-             Log.i("aaaa",response.toString());
              throw new IOException("Unexpected code " + response.code());}
-         Log.i("aaaa",response.body().string());
+         JSONObject object=JSONObject.parseObject(response.body().string());
+         for (Map.Entry<String,Object> entry:object.entrySet()){
+             JSONObject object1= JSON.parseObject(String.valueOf(entry.getValue()));
+             for (Map.Entry<String,Object> entry1:object1.entrySet())
+            Log.e("aaa",entry1.getKey()+"-"+entry1.getValue());
+         }
          System.out.println(response.body().string());
      }
 
