@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,12 +57,13 @@ public class MainActivity extends AppCompatActivity {
          if (!response.isSuccessful()){
              throw new IOException("Unexpected code " + response.code());}
          JSONObject object=JSONObject.parseObject(response.body().string());
-         for (Map.Entry<String,Object> entry:object.entrySet()){
-             JSONObject object1= JSON.parseObject(String.valueOf(entry.getValue()));
-             for (Map.Entry<String,Object> entry1:object1.entrySet())
-            Log.e("aaa",entry1.getKey()+"-"+entry1.getValue());
-         }
+
+         Gson gson=new Gson();
+
+
          System.out.println(response.body().string());
+         JsonBean status = gson.fromJson(response.body().string(), JsonBean.class);
+         Log.i("json------", status.getResult().getData().getPm().getCityName());
      }
 
  }
