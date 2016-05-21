@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText edit;
     private TextView textView;
     private Button btn;
+    private TextView textViewtrain;
+    private Button btntrain;
+    private OkHttpClient client;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
             edit=(EditText)findViewById(R.id.myedit);
         textView=(TextView)findViewById(R.id.mytext);
         btn=(Button)findViewById(R.id.btn);
-
+        textViewtrain=(TextView)findViewById(R.id.traintext);
+        btntrain=(Button)findViewById(R.id.trainbtn);
+        client=new OkHttpClient();
           btn.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
@@ -55,13 +60,47 @@ public class MainActivity extends AppCompatActivity {
                   }.start();
               }
           });
+    btntrain.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new Thread(){
+                @Override
+                public void run() {
+                    String string = edit.getText().toString();
+                    Request request = new Request.Builder()
+                            .url("http://apis.juhe.cn/train/s?name="+string+"&key="
+                                    +"fe79856f2c5abbc3d72c88b55ab67e9d")
+                            .get()
+                            .build();
+                    try{
+                        Response response = client.newCall(request).execute();
 
+                        //System.out.println(response.body().string());
+
+                        Gson gson = new Gson();
+                        java.lang.reflect.Type type = new TypeToken<TrainBean>() {}.getType();
+                        final TrainBean json = gson.fromJson(response.body().string(), type);
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textViewtrain.setText("归属地：" + json.result.train_info.toString());
+                            }
+                        });
+
+                        Log.i("json------", json.result.train_info.endtime);
+                    }catch (Exception e){
+                        Log.i("json------", e.getMessage()+"/"+e.getCause());
+                    }
+                }
+            }.start();
+        }
+    });
 
 
 
     }
  public  class GetWeather{
-     OkHttpClient client=new OkHttpClient();
+
      String string = edit.getText().toString();
      private void run() {
          Request request = new Request.Builder()
